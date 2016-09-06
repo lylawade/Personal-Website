@@ -1,0 +1,24 @@
+<html>
+<head>
+    <title>Lyla Wade</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+     <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+</head>
+<body>
+ <header>
+      <div class="container">
+        <h1 class="logo">Lyla Wade</h1>
+        <strong><nav>
+          <ul class="menu">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+          </ul>
+        </nav></strong>
+      </div>
+    </header>
+    <div class="container" style="background-color: #f2f2f2">
+      {% block content %}
+      {% endblock %}
+    </div>
+</body>
+</html>
