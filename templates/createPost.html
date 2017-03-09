@@ -1,0 +1,20 @@
+<!-- extend from layout.html -->
+{% extends "layout.html" %}
+
+{% block content %}
+  <h1>Create a new post</h1>
+  
+  <form action="" method="post" name="new_post">
+	  <h6>Title:</h6>
+      <textarea rows=1  id="Title" name="Title" required></textarea></br>
+	  <h6>Body:</h6>
+	  <textarea id="body" name="body" required></textarea></br>
+	  <script>
+		CKEDITOR.replace("body");		
+	  </script>
+	  
+	  <p><input type="submit" value="Submit Post"></p>	
+  </form>
+   
+{% endblock %}
+

@@ -2,7 +2,8 @@ from flask import Flask, render_template, flash, redirect, request, session, g
 import flask_sqlalchemy, os
 from sqlite3 import dbapi2 as sqlite3
 from flask_sqlalchemy import SQLAlchemy
-from passlib.hash import sha256_crypt
+import socket
+from socket import gethostbyname
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -63,10 +64,21 @@ def home():
 	posts = cur.fetchall()
 	return render_template('layout.html', posts = posts)
 
-@app.route('/about')
-def about():
-	return render_template('about.html')
-
+@app.route('/createPost', methods=['GET', 'POST'])
+def createPost():
+	#Get posts to display
+	db = get_db()
+	cur = db.execute('select title, description, post_body, date, author, post_id from posts')
+	posts = cur.fetchall()
+	return render_template('createPost.html', posts = posts)
+	
+@app.route('/login', methods=['GET', 'POST'])	
+def login():
+	#TO DO
+	#Only display "Create Post" page when logged in
+	#As admin/Lyla
+	return redirect('/')
+	
 #Routing ends 
 #_______________________________________________________________________________________
 
@@ -84,7 +96,8 @@ if __name__ == '__main__':
 	#Uncomment below when deployed on server
 	#If uncommented, everytime route.py is run
 	#database is reinitialized
-
 	with app.app_context():
-		init_db()
-	app.run(debug=True)
+		
+		if('liveconsole' not in socket.gethostname()):
+			init_db()
+			app.run(debug=True)
