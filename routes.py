@@ -59,7 +59,6 @@ def close_db(error):
 @app.route('/')
 def home():
 	db = get_db()
-	addDummyPosts();
 	cur = db.execute('select title, description, post_body, date, author, post_id from posts')
 	posts = cur.fetchall()
 	return render_template('layout.html', posts = posts)
@@ -67,6 +66,12 @@ def home():
 @app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
 	#Get posts to display
+	if(request.method == 'POST'):
+		title = request.form['Title']
+		body = request.form['body']
+		#Put in database
+		addPost(title, body)
+		
 	db = get_db()
 	cur = db.execute('select title, description, post_body, date, author, post_id from posts')
 	posts = cur.fetchall()
@@ -80,22 +85,21 @@ def login():
 	return redirect('/')
 	
 #Routing ends 
+#Helper methods begin
 #_______________________________________________________________________________________
 
-def addDummyPosts():
-	i = 0
+
+def addPost(title, body):
 	db = get_db()
-	
-	while(i<3):
-		db.execute('insert into posts (title, post_body, description, author) values (?,?,?,?)',
-		["Title " + str(i), "Fashion fashion and mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at.", "Description " + str(i), "System User"])
-		db.commit()	
-		i+=1
+	db.execute('insert into posts (title, post_body, description, author) values (?,?,?,?)',
+	[title, body, "Test Description", "System User"])
+	db.commit()	
+
+
+#Helper methods end
+#_______________________________________________________________________________________	
 
 if __name__ == '__main__':
-	#Uncomment below when deployed on server
-	#If uncommented, everytime route.py is run
-	#database is reinitialized
 	with app.app_context():
 		
 		if('liveconsole' not in socket.gethostname()):

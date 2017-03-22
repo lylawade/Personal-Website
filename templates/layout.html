@@ -17,11 +17,14 @@ body {font-family: "Raleway"}
 
 <!-- Navigation bar with social media icons -->
 <div class="w3-bar w3-white w3-hide-small">
+
   <!-- replace below link with LinkedIn -->
-  <a  href="https://www.google.com" class="w3-bar-item w3-button">LinkedIn</a>
-  <a href="{{ url_for('createPost') }}" class="w3-bar-item w3-button">Create Post</a>
+  <a href="{{ url_for('home') }}" class="w3-bar-item w3-button">Home</a>
   <a href="{{ url_for('login') }}" class="w3-bar-item w3-button">Login</a>
+  <a href="{{ url_for('createPost') }}" class="w3-bar-item w3-button">Create Post</a>
+  <a  href="https://www.google.com" class="w3-bar-item w3-button">LinkedIn</a>
   <a href="#" class="w3-bar-item w3-button w3-right"><i class="fa fa-search"></i></a>
+  
 </div>
   
 <!-- w3-content defines a container for fixed size centered content, 
@@ -43,18 +46,13 @@ and is wrapped around the whole page content, except for the footer in this exam
           <h1 class="w3-jumbo w3-text-black w3-hide-small"><b>BLOG</b></h1> -->
     </div>
   </header>
-
-
 	
   <!-- Grid -->
   <div class="w3-row w3-padding w3-border">
-  
-	<!-- Blog entries -->
-		<!-- Create Post-->
-		{% block content %}
-		{% endblock %}		
-
-		<!-- END Create Post -->
+	<!-- Create Post-->
+	{% block content %}
+	{% endblock %}		
+	<!-- END Create Post -->
 	
 	<!-- Blog entries -->
 	<div class="w3-col l8 s12">
