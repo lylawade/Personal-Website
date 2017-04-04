@@ -4,6 +4,7 @@ from sqlite3 import dbapi2 as sqlite3
 from flask_sqlalchemy import SQLAlchemy
 import socket
 from socket import gethostbyname
+from passlib.hash import sha256_crypt
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -56,13 +57,21 @@ def close_db(error):
 
 #Db methods end
 #________________________________________________________________________________________
+session = {'authenticated': False, 'Admin': False}
 @app.route('/')
+def start():
+	session['authenticated'] = False
+	session['Admin'] = False
+	return redirect('/home')
+	
+@app.route('/home')
 def home():
 	db = get_db()
 	cur = db.execute('select title, description, post_body, date, author, post_id from posts')
 	posts = cur.fetchall()
-	return render_template('layout.html', posts = posts)
-
+	isAdmin = session['Admin']
+	return render_template('layout.html', posts = posts, isAdmin = isAdmin)
+	
 @app.route('/createPost', methods=['GET', 'POST'])
 def createPost():
 	#Get posts to display
@@ -75,14 +84,48 @@ def createPost():
 	db = get_db()
 	cur = db.execute('select title, description, post_body, date, author, post_id from posts')
 	posts = cur.fetchall()
-	return render_template('createPost.html', posts = posts)
+	return render_template('createPost.html', posts = posts, isAdmin = session['Admin'])
 	
+@app.route('/createAccount', methods=['GET', 'POST'])
+def createAccount():
+	#Get posts to display
+	if(request.method == 'POST'):
+		username = request.form['username']
+		password = request.form['password']
+		#Put in database
+		addAccount(username, sha256_crypt.encrypt(password))
+		
+	db = get_db()
+	cur = db.execute('select title, description, post_body, date, author, post_id from posts')
+	posts = cur.fetchall()
+	return render_template('createAccount.html', posts = posts, isAdmin = session['Admin'] )
+
 @app.route('/login', methods=['GET', 'POST'])	
 def login():
-	#TO DO
-	#Only display "Create Post" page when logged in
-	#As admin/Lyla
-	return redirect('/')
+	if(request.method == 'POST'):
+		username = request.form['username']
+		password = request.form['password']
+		
+		#Get expected password
+		db = get_db()
+		cur = db.execute('select password from users where username = ?', (username,))
+		expected_password = (cur.fetchone())[0]
+		
+		if(sha256_crypt.verify(password,expected_password) == True):
+			flash('Logged In')
+			session['authenticated'] = True			
+			if(username == "admin"):
+				session['Admin'] = True
+			return redirect('/home')
+		else:
+			flash('Login Unsuccessful')
+			return redirect('/login')
+			
+	isAdmin = session['authenticated']
+	db = get_db()
+	cur = db.execute('select title, description, post_body, date, author, post_id from posts')
+	posts = cur.fetchall()
+	return render_template('login.html', posts = posts, isAdmin = isAdmin )
 	
 #Routing ends 
 #Helper methods begin
@@ -95,7 +138,12 @@ def addPost(title, body):
 	[title, body, "Test Description", "System User"])
 	db.commit()	
 
-
+def addAccount(username, password):
+	db = get_db()
+	db.execute('insert into users (username, password) values (?,?)',
+	[username, password])
+	db.commit()	
+	
 #Helper methods end
 #_______________________________________________________________________________________	
 

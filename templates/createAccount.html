@@ -1,0 +1,17 @@
+<!-- extend from layout.html -->
+{% extends "layout.html" %}
+
+{% block content %}
+  <h1>Create Account</h1>
+  
+  <form action="" method="post" name="createAccount">
+	  <h6>username:</h6>
+      <textarea rows=1  id="username" name="username" required></textarea></br>
+	  <h6>password:</h6>
+	  <input type="password" rows=1 id="password" name="password" required/> </br>
+	  
+	  <p><input type="submit" value="create account"></p>	
+  </form>
+   
+{% endblock %}
+
